@@ -8,6 +8,7 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Tests.Builders;
+using BenchmarkDotNet.Tests.Running;
 using BenchmarkDotNet.Toolchains;
 using BenchmarkDotNet.Toolchains.Results;
 using BenchmarkDotNet.Validators;
@@ -30,7 +31,19 @@ namespace BenchmarkDotNet.Tests.Mocks
                 ImmutableArray<ValidationError>.Empty);
         }
 
-        public static Summary CreateSummary(IConfig config) => new Summary(
+        //public static Summary CreateSummary(IConfig config) => new Summary(
+        //        "MockSummary",
+        //        CreateReports(config),
+        //        new HostEnvironmentInfoBuilder().WithoutDotNetSdkVersion().Build(),
+        //        string.Empty,
+        //        string.Empty,
+        //        TimeSpan.FromMinutes(1),
+        //        config.CultureInfo,
+        //        ImmutableArray<ValidationError>.Empty);
+
+        public static Summary CreateSummary(IConfig config)
+        {
+            var summary = new Summary(
                 "MockSummary",
                 CreateReports(config),
                 new HostEnvironmentInfoBuilder().WithoutDotNetSdkVersion().Build(),
@@ -39,6 +52,8 @@ namespace BenchmarkDotNet.Tests.Mocks
                 TimeSpan.FromMinutes(1),
                 config.CultureInfo,
                 ImmutableArray<ValidationError>.Empty);
+            return summary;
+        }
 
         public static Summary CreateSummary(IConfig config, bool hugeSd, Metric[] metrics)
             => CreateSummary<MockBenchmarkClass>(config, hugeSd, metrics);

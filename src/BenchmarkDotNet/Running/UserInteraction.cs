@@ -89,7 +89,7 @@ namespace BenchmarkDotNet.Running
             for (int i = 0; i < allTypes.Count; i++)
             {
                 var type = allTypes[i];
-
+                //make issue that this selects 2 samples because 25 is in name Algo_Md5VsSha256
                 if (userInput.Any(arg => type.GetDisplayName().ContainsWithIgnoreCase(arg))
                     || userInput.Contains($"#{i}")
                     || userInput.Contains(i.ToString())
