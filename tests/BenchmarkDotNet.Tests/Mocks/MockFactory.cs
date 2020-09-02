@@ -31,27 +31,21 @@ namespace BenchmarkDotNet.Tests.Mocks
                 ImmutableArray<ValidationError>.Empty);
         }
 
-        //public static Summary CreateSummary(IConfig config) => new Summary(
-        //        "MockSummary",
-        //        CreateReports(config),
-        //        new HostEnvironmentInfoBuilder().WithoutDotNetSdkVersion().Build(),
-        //        string.Empty,
-        //        string.Empty,
-        //        TimeSpan.FromMinutes(1),
-        //        config.CultureInfo,
-        //        ImmutableArray<ValidationError>.Empty);
-
         public static Summary CreateSummary(IConfig config)
         {
             var summary = new Summary(
                 "MockSummary",
                 CreateReports(config),
-                new HostEnvironmentInfoBuilder().WithoutDotNetSdkVersion().Build(),
+                new HostEnvironmentInfoBuilder().Build(),
                 string.Empty,
                 string.Empty,
                 TimeSpan.FromMinutes(1),
                 config.CultureInfo,
                 ImmutableArray<ValidationError>.Empty);
+            var table = summary.Table;
+            var columns = table.Columns;
+            var runTime = columns.Where(x => x.Header == "Runtime").ToList();
+            runTime[0].Content[0] = "Fuck";
             return summary;
         }
 
@@ -83,7 +77,8 @@ namespace BenchmarkDotNet.Tests.Mocks
             var measurements = Enumerable.Range(0, n)
                 .Select(index => new Measurement(1, IterationMode.Workload, IterationStage.Result, index + 1, 1, nanoseconds + index))
                 .ToList();
-            return new BenchmarkReport(true, benchmarkCase, buildResult, buildResult, new List<ExecuteResult> { executeResult }, measurements, default, Array.Empty<Metric>());
+            var foo =  new BenchmarkReport(true, benchmarkCase, buildResult, buildResult, new List<ExecuteResult> { executeResult }, measurements, default, Array.Empty<Metric>());
+            return foo;
         }
 
         private static BenchmarkReport CreateReport(BenchmarkCase benchmarkCase, bool hugeSd, Metric[] metrics)
