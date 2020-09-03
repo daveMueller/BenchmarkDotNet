@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ApprovalUtilities.Utilities;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
@@ -43,9 +44,10 @@ namespace BenchmarkDotNet.Tests.Mocks
                 config.CultureInfo,
                 ImmutableArray<ValidationError>.Empty);
             var table = summary.Table;
-            var columns = table.Columns;
-            var runTime = columns.Where(x => x.Header == "Runtime").ToList();
-            runTime[0].Content[0] = "Fuck";
+            table.FullContentWithHeader.Skip(1).ForEach(x => x[14] = "Hello");
+
+            //var runTime = columns.Where(x => x.Header == "Runtime").ToList();
+            //runTime[0].Content[0] = "Fuck";
             return summary;
         }
 
