@@ -342,12 +342,13 @@ namespace BenchmarkDotNet.Tests
                 "--statisticalTest", $"{thresholdValue.ToString(CultureInfo.InvariantCulture)}{thresholdUnit.ToShortName()}"
             }, new OutputLogger(Output)).config;
 
-            var mockSummary = MockFactory.CreateSummary(config);
+            var runtimeInfoWrapperMock = MockFactory.CreateRuntimeInfoWrapper();
+            var mockSummary = MockFactory.CreateSummary(config, runtimeInfoWrapperMock);
 
             Assert.True(config.GetJobs().First().Meta.Baseline); // when the user provides multiple runtimes the first one should be marked as baseline
             Assert.False(config.GetJobs().Last().Meta.Baseline);
 
-            var statisticalTestColumn = config.GetColumnProviders().SelectMany(columnProvider => columnProvider.GetColumns(mockSummary)).OfType<StatisticalTestColumn>().Single();
+            var statisticalTestColumn = config.GetColumnProviders().SelectMany(columnProvider => columnProvider.GetColumns(mockSummary, runtimeInfoWrapperMock)).OfType<StatisticalTestColumn>().Single();
 
             Assert.Equal(StatisticalTestKind.MannWhitney, statisticalTestColumn.Kind);
             Assert.Equal(Threshold.Create(thresholdUnit, thresholdUnit == ThresholdUnit.Ratio ? thresholdValue / 100.0 : thresholdValue), statisticalTestColumn.Threshold);

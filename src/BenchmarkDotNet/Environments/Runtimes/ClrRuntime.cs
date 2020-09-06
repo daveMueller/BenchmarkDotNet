@@ -13,6 +13,7 @@ namespace BenchmarkDotNet.Environments
         public static readonly ClrRuntime Net471 = new ClrRuntime(RuntimeMoniker.Net471, "net471", ".NET Framework 4.7.1");
         public static readonly ClrRuntime Net472 = new ClrRuntime(RuntimeMoniker.Net472, "net472", ".NET Framework 4.7.2");
         public static readonly ClrRuntime Net48 = new ClrRuntime(RuntimeMoniker.Net48, "net48", ".NET Framework 4.8");
+        public static readonly ClrRuntime NotRecognized = new ClrRuntime(RuntimeMoniker.NotRecognized, "NotRecognized", "NotRecognized");
 
         public string Version { get; }
 

@@ -3,6 +3,7 @@ using System.Linq;
 using BenchmarkDotNet.Characteristics;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
@@ -34,14 +35,14 @@ namespace BenchmarkDotNet.Columns
         public int PriorityInCategory => 0;
         public bool IsNumeric => false;
         public UnitType UnitType => UnitType.Dimensionless;
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper) => GetValue(summary, benchmarkCase, runtimeInfoWrapper);
 
         public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => !benchmarkCase.Job.HasValue(characteristic);
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, IRuntimeInfoWrapper runtimeInfoWrapper)
         {
             if (!benchmarkCase.Job.HasValue(characteristic) && EnvironmentResolver.Instance.CanResolve(characteristic))
-                return Presenter.ToPresentation(benchmarkCase.Job.ResolveValue(characteristic, EnvironmentResolver.Instance), characteristic);
+                return Presenter.ToPresentation(benchmarkCase.Job.ResolveValue(characteristic, EnvironmentResolver.Instance2(runtimeInfoWrapper)), characteristic);
 
             return Presenter.ToPresentation(benchmarkCase.Job, characteristic);
         }

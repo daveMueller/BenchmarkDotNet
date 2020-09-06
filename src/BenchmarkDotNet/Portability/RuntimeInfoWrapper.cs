@@ -5,14 +5,14 @@ using BenchmarkDotNet.Environments;
 
 namespace BenchmarkDotNet.Portability
 {
-    public class RuntimeInformationWrapper
+    public class RuntimeInfoWrapper : IRuntimeInfoWrapper
     {
         public Runtime GetCurrentRuntime()
         {
             return RuntimeInformation.GetCurrentRuntime();
         }
 
-        internal Platform GetCurrentPlatform()
+        public Platform GetCurrentPlatform()
         {
             return RuntimeInformation.GetCurrentPlatform();
         }

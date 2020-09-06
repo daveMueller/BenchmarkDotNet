@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using BenchmarkDotNet.Mathematics;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using JetBrains.Annotations;
@@ -11,7 +12,7 @@ namespace BenchmarkDotNet.Columns
         public abstract string Id { get; }
         public abstract string ColumnName { get; }
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, IRuntimeInfoWrapper runtimeInfoWrapper)
         {
             string logicalGroupKey = summary.GetLogicalGroupKey(benchmarkCase);
             var baseline = summary.GetBaseline(logicalGroupKey);
@@ -39,7 +40,7 @@ namespace BenchmarkDotNet.Columns
         public abstract bool IsNumeric { get; }
         public abstract UnitType UnitType { get; }
         public abstract string Legend { get; }
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper) => GetValue(summary, benchmarkCase, runtimeInfoWrapper);
         public override string ToString() => ColumnName;
         public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => false;
 

@@ -11,6 +11,7 @@ using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Tests.Builders;
+using BenchmarkDotNet.Tests.Mocks;
 using BenchmarkDotNet.Toolchains;
 using BenchmarkDotNet.Toolchains.Results;
 using BenchmarkDotNet.Validators;
@@ -72,7 +73,8 @@ namespace BenchmarkDotNet.Tests.Reports
                 string.Empty,
                 TimeSpan.FromMinutes(1),
                 TestCultureInfo.Instance,
-                ImmutableArray<ValidationError>.Empty);
+                ImmutableArray<ValidationError>.Empty,
+                MockFactory.CreateRuntimeInfoWrapper());
             MarkdownExporter.Default.ExportToLog(summary, logger);
             output.WriteLine(logger.GetLog());
             return summary;

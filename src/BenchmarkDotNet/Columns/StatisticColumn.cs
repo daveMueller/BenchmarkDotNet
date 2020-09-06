@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Mathematics;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using JetBrains.Annotations;
@@ -117,10 +118,10 @@ namespace BenchmarkDotNet.Columns
             Legend = legend;
         }
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, IRuntimeInfoWrapper runtimeInfoWrapper)
             => Format(summary, benchmarkCase.Config, summary[benchmarkCase].ResultStatistics, SummaryStyle.Default);
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper)
             => Format(summary, benchmarkCase.Config, summary[benchmarkCase].ResultStatistics, style);
 
         public bool IsAvailable(Summary summary) => true;

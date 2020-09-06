@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Reports;
+﻿using BenchmarkDotNet.Portability;
+using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
 namespace BenchmarkDotNet.Columns
@@ -19,12 +20,12 @@ namespace BenchmarkDotNet.Columns
         /// <summary>
         /// Value in this column formatted using the default style.
         /// </summary>
-        string GetValue(Summary summary, BenchmarkCase benchmarkCase);
+        string GetValue(Summary summary, BenchmarkCase benchmarkCase, IRuntimeInfoWrapper runtimeInfoWrapper);
 
         /// <summary>
         /// Value in this column formatted using the specified style.
         /// </summary>
-        string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style);
+        string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper);
 
         bool IsDefault(Summary summary, BenchmarkCase benchmarkCase);
 

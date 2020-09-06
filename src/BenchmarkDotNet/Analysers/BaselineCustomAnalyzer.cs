@@ -3,6 +3,7 @@ using BenchmarkDotNet.Reports;
 using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Extensions;
+using BenchmarkDotNet.Portability;
 
 namespace BenchmarkDotNet.Analysers
 {
@@ -14,7 +15,7 @@ namespace BenchmarkDotNet.Analysers
 
         protected override IEnumerable<Conclusion> AnalyseSummary(Summary summary)
         {
-            var columns = summary.GetColumns().Where(t => t.GetType().IsSubclassOf(typeof(BaselineCustomColumn)))
+            var columns = summary.GetColumns(new RuntimeInfoWrapper()).Where(t => t.GetType().IsSubclassOf(typeof(BaselineCustomColumn)))
                                               .Select(t => t.ColumnName)
                                               .Distinct()
                                               .ToArray();

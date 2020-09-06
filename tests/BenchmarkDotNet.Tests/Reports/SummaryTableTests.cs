@@ -24,8 +24,9 @@ namespace BenchmarkDotNet.Tests.Reports
         {
             var logger = new AccumulationLogger();
             var config = DefaultConfig.Instance;
-            var summary = MockFactory.CreateSummary(config);
-            var table = new SummaryTable(summary);
+            var runtimeInfoWrapperMock = MockFactory.CreateRuntimeInfoWrapper();
+            var summary = MockFactory.CreateSummary(config, runtimeInfoWrapperMock);
+            var table = new SummaryTable(summary, runtimeInfoWrapperMock);
             MarkdownExporter.Default.ExportToLog(summary, logger);
             output.WriteLine(logger.GetLog());
             return table;
@@ -49,8 +50,9 @@ namespace BenchmarkDotNet.Tests.Reports
         public void NumericColumnIsRightJustified()
         {
             var config = ManualConfig.Create(DefaultConfig.Instance).AddColumn(StatisticColumn.Mean);
-            var summary = MockFactory.CreateSummary(config);
-            var table = new SummaryTable(summary);
+            var runtimeInfoWrapperMock = MockFactory.CreateRuntimeInfoWrapper();
+            var summary = MockFactory.CreateSummary(config, runtimeInfoWrapperMock);
+            var table = new SummaryTable(summary, runtimeInfoWrapperMock);
 
             Assert.Equal(SummaryTable.SummaryTableColumn.TextJustification.Right, table.Columns.First(c => c.Header == "Mean").Justify);
         }
@@ -59,8 +61,9 @@ namespace BenchmarkDotNet.Tests.Reports
         public void TextColumnIsLeftJustified()
         {
             var config = ManualConfig.Create(DefaultConfig.Instance).AddColumn(new ParamColumn("Param"));
-            var summary = MockFactory.CreateSummary(config);
-            var table = new SummaryTable(summary);
+            var runtimeInfoWrapperMock = MockFactory.CreateRuntimeInfoWrapper();
+            var summary = MockFactory.CreateSummary(config, runtimeInfoWrapperMock);
+            var table = new SummaryTable(summary, runtimeInfoWrapperMock);
 
             Assert.Equal(SummaryTable.SummaryTableColumn.TextJustification.Left, table.Columns.First(c => c.Header == "Param").Justify);
         }
@@ -70,7 +73,7 @@ namespace BenchmarkDotNet.Tests.Reports
         {
             var config = ManualConfig.Create(DefaultConfig.Instance)
                 .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.FastestToSlowest, MethodOrderPolicy.Alphabetical));
-            var summary = MockFactory.CreateSummary(config);
+            var summary = MockFactory.CreateSummary(config, MockFactory.CreateRuntimeInfoWrapper());
             Assert.True(summary.Orderer is DefaultOrderer defaultOrderer &&
                         defaultOrderer.SummaryOrderPolicy == SummaryOrderPolicy.FastestToSlowest &&
                         defaultOrderer.MethodOrderPolicy == MethodOrderPolicy.Alphabetical);
@@ -85,7 +88,7 @@ namespace BenchmarkDotNet.Tests.Reports
 
             // act
             var summary = MockFactory.CreateSummary(config, hugeSd: false, metrics);
-            var table = new SummaryTable(summary);
+            var table = new SummaryTable(summary, MockFactory.CreateRuntimeInfoWrapper());
             var actual = table.Columns.First(c => c.Header == "metric1").Content;
 
             // assert
@@ -102,7 +105,7 @@ namespace BenchmarkDotNet.Tests.Reports
 
             // act
             var summary = MockFactory.CreateSummary(config, hugeSd: false, metrics);
-            var table = new SummaryTable(summary, style);
+            var table = new SummaryTable(summary, MockFactory.CreateRuntimeInfoWrapper(), style);
             var actual = table.Columns.First(c => c.Header == "metric1").Content;
 
             // assert

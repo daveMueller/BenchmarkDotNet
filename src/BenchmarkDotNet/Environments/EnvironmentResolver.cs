@@ -11,14 +11,19 @@ namespace BenchmarkDotNet.Environments
     {
         public const int DefaultUnrollFactorForThroughput = 16;
 
-        public static readonly IResolver Instance = new CompositeResolver(new EnvironmentResolver(new RuntimeInformationWrapper()), GcResolver.Instance);
+        public static readonly IResolver Instance = new CompositeResolver(new EnvironmentResolver(new RuntimeInfoWrapper()), GcResolver.Instance);
 
-        private EnvironmentResolver(RuntimeInformationWrapper runtimeInformationWrapper)
+        public static IResolver Instance2(IRuntimeInfoWrapper runtimeInfoWrapper)
         {
-            Register(EnvironmentMode.PlatformCharacteristic, runtimeInformationWrapper.GetCurrentPlatform);
-            Register(EnvironmentMode.RuntimeCharacteristic, runtimeInformationWrapper.GetCurrentRuntime);
-            Register(EnvironmentMode.JitCharacteristic, runtimeInformationWrapper.GetCurrentJit);
-            Register(EnvironmentMode.AffinityCharacteristic, runtimeInformationWrapper.GetCurrentAffinity);
+            return new CompositeResolver(new EnvironmentResolver(new RuntimeInfoWrapper()), GcResolver.Instance);
+        }
+
+        private EnvironmentResolver(IRuntimeInfoWrapper runtimeInfoWrapper)
+        {
+            Register(EnvironmentMode.PlatformCharacteristic, runtimeInfoWrapper.GetCurrentPlatform);
+            Register(EnvironmentMode.RuntimeCharacteristic, runtimeInfoWrapper.GetCurrentRuntime);
+            Register(EnvironmentMode.JitCharacteristic, runtimeInfoWrapper.GetCurrentJit);
+            Register(EnvironmentMode.AffinityCharacteristic, runtimeInfoWrapper.GetCurrentAffinity);
             Register(EnvironmentMode.EnvironmentVariablesCharacteristic, Array.Empty<EnvironmentVariable>);
             Register(EnvironmentMode.PowerPlanModeCharacteristic, () => PowerManagementApplier.Map(PowerPlan.HighPerformance));
 

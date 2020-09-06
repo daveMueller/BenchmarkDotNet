@@ -15,6 +15,7 @@ using BenchmarkDotNet.Helpers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Mathematics;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Toolchains;
 using BenchmarkDotNet.Toolchains.Parameters;
@@ -47,11 +48,11 @@ namespace BenchmarkDotNet.Running
 
                 var supportedBenchmarks = GetSupportedBenchmarks(benchmarkRunInfos, compositeLogger, resolver);
                 if (!supportedBenchmarks.Any(benchmarks => benchmarks.BenchmarksCases.Any()))
-                    return new[] { Summary.NothingToRun(title, resultsFolderPath, logFilePath) };
+                    return new[] { Summary.NothingToRun(title, resultsFolderPath, logFilePath, new RuntimeInfoWrapper()) };
 
                 var validationErrors = Validate(supportedBenchmarks, compositeLogger);
                 if (validationErrors.Any(validationError => validationError.IsCritical))
-                    return new[] { Summary.ValidationFailed(title, resultsFolderPath, logFilePath, validationErrors) };
+                    return new[] { Summary.ValidationFailed(title, resultsFolderPath, logFilePath, validationErrors, new RuntimeInfoWrapper()) };
 
                 var benchmarksToRunCount = supportedBenchmarks.Sum(benchmarkInfo => benchmarkInfo.BenchmarksCases.Length);
                 compositeLogger.WriteLineHeader("// ***** BenchmarkRunner: Start   *****");
@@ -91,7 +92,7 @@ namespace BenchmarkDotNet.Running
 
                     if (supportedBenchmarks.Any(b => b.Config.Options.IsSet(ConfigOptions.JoinSummary)))
                     {
-                        var joinedSummary = Summary.Join(results, globalChronometer.GetElapsed());
+                        var joinedSummary = Summary.Join(results, globalChronometer.GetElapsed(), new RuntimeInfoWrapper());
 
                         PrintSummary(compositeLogger, supportedBenchmarks.First(b => b.Config.Options.IsSet(ConfigOptions.JoinSummary)).Config, joinedSummary);
 
@@ -190,7 +191,8 @@ namespace BenchmarkDotNet.Running
                 logFilePath,
                 clockSpan.GetTimeSpan(),
                 cultureInfo,
-                Validate(new[] {benchmarkRunInfo }, NullLogger.Instance)); // validate them once again, but don't print the output
+                Validate(new[] {benchmarkRunInfo }, NullLogger.Instance), // validate them once again, but don't print the output
+                new RuntimeInfoWrapper());
         }
 
         private static void PrintSummary(ILogger logger, ImmutableConfig config, Summary summary)

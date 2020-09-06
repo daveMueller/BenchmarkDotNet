@@ -10,6 +10,7 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Tests.Builders;
+using BenchmarkDotNet.Tests.Mocks;
 using BenchmarkDotNet.Toolchains;
 using BenchmarkDotNet.Toolchains.Results;
 using BenchmarkDotNet.Validators;
@@ -74,7 +75,7 @@ namespace BenchmarkDotNet.Tests.Reports
         private static Summary CreateSummary(IList<BenchmarkReport> reports)
         {
             HostEnvironmentInfo hostEnvironmentInfo = new HostEnvironmentInfoBuilder().Build();
-            return new Summary("MockSummary", reports.ToImmutableArray(), hostEnvironmentInfo, string.Empty, string.Empty, TimeSpan.FromMinutes(1.0), TestCultureInfo.Instance, ImmutableArray<ValidationError>.Empty);
+            return new Summary("MockSummary", reports.ToImmutableArray(), hostEnvironmentInfo, string.Empty, string.Empty, TimeSpan.FromMinutes(1.0), TestCultureInfo.Instance, ImmutableArray<ValidationError>.Empty, MockFactory.CreateRuntimeInfoWrapper());
         }
 
         public class MockBenchmarkClass

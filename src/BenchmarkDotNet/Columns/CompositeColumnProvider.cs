@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 
 namespace BenchmarkDotNet.Columns
@@ -13,6 +14,6 @@ namespace BenchmarkDotNet.Columns
             this.providers = providers;
         }
 
-        public IEnumerable<IColumn> GetColumns(Summary summary) => providers.SelectMany(p => p.GetColumns(summary));
+        public IEnumerable<IColumn> GetColumns(Summary summary, IRuntimeInfoWrapper runtimeInfoWrapper) => providers.SelectMany(p => p.GetColumns(summary, runtimeInfoWrapper));
     }
 }

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Helpers;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Running;
 using JetBrains.Annotations;
 
@@ -10,12 +11,12 @@ namespace BenchmarkDotNet.Reports
 {
     public static class SummaryExtensions
     {
-        public static IColumn[] GetColumns(this Summary summary)
+        public static IColumn[] GetColumns(this Summary summary, IRuntimeInfoWrapper runtimeInfoWrapper)
             => summary
                 .BenchmarksCases
                 .SelectMany(benchmark => benchmark.Config.GetColumnProviders())
                 .Distinct()
-                .SelectMany(provider => provider.GetColumns(summary))
+                .SelectMany(provider => provider.GetColumns(summary, runtimeInfoWrapper))
                 .Where(column => column.IsAvailable(summary))
                 .GroupBy(column => column.Id)
                 .Select(group => group.First())

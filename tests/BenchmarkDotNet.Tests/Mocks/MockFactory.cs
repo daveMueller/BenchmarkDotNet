@@ -5,6 +5,8 @@ using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Environments;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Tests.Builders;
@@ -28,10 +30,11 @@ namespace BenchmarkDotNet.Tests.Mocks
                 string.Empty,
                 TimeSpan.FromMinutes(1),
                 TestCultureInfo.Instance,
-                ImmutableArray<ValidationError>.Empty);
+                ImmutableArray<ValidationError>.Empty,
+                new RuntimeInfoWrapper());
         }
 
-        public static Summary CreateSummary(IConfig config)
+        public static Summary CreateSummary(IConfig config, IRuntimeInfoWrapper runtimeInfoWrapper)
         {
             var summary = new Summary(
                 "MockSummary",
@@ -41,11 +44,8 @@ namespace BenchmarkDotNet.Tests.Mocks
                 string.Empty,
                 TimeSpan.FromMinutes(1),
                 config.CultureInfo,
-                ImmutableArray<ValidationError>.Empty);
-            var table = summary.Table;
-            var columns = table.Columns;
-            var runTime = columns.Where(x => x.Header == "Runtime").ToList();
-            runTime[0].Content[0] = "Fuck";
+                ImmutableArray<ValidationError>.Empty,
+                runtimeInfoWrapper);
             return summary;
         }
 
@@ -60,8 +60,13 @@ namespace BenchmarkDotNet.Tests.Mocks
                 string.Empty,
                 TimeSpan.FromMinutes(1),
                 TestCultureInfo.Instance,
-                ImmutableArray<ValidationError>.Empty);
+                ImmutableArray<ValidationError>.Empty,
+                new RuntimeInfoWrapper());
 
+        public static IRuntimeInfoWrapper CreateRuntimeInfoWrapper()
+        {
+            return new MockRuntimeInfoWrapper(); 
+        }
         private static ImmutableArray<BenchmarkReport> CreateReports(IConfig config)
             => CreateBenchmarks<MockBenchmarkClass>(config).Select(CreateSimpleReport).ToImmutableArray();
 
@@ -99,6 +104,17 @@ namespace BenchmarkDotNet.Tests.Mocks
             return new BenchmarkReport(true, benchmarkCase, buildResult, buildResult, new List<ExecuteResult> { executeResult }, measurements, default, metrics);
         }
 
+        private class MockRuntimeInfoWrapper : IRuntimeInfoWrapper
+        {
+            public Runtime GetCurrentRuntime() => ClrRuntime.NotRecognized;
+
+            public Platform GetCurrentPlatform() => Platform.AnyCpu;
+
+            public Jit GetCurrentJit() => Jit.Default;
+
+            public IntPtr GetCurrentAffinity() => IntPtr.Zero;
+        }
+
         [LongRunJob]
         public class MockBenchmarkClass
         {
@@ -106,5 +122,7 @@ namespace BenchmarkDotNet.Tests.Mocks
 
             [Benchmark] public void Bar() { }
         }
+
+
     }
 }

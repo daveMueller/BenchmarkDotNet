@@ -109,7 +109,7 @@ namespace BenchmarkDotNet.Running
             catch (InvalidBenchmarkDeclarationException e)
             {
                 ConsoleLogger.Default.WriteLineError(e.Message);
-                return Summary.NothingToRun(e.Message, string.Empty, string.Empty);
+                return Summary.NothingToRun(e.Message, string.Empty, string.Empty, new RuntimeInfoWrapper());
             }
         }
 
@@ -122,7 +122,7 @@ namespace BenchmarkDotNet.Running
             catch (InvalidBenchmarkDeclarationException e)
             {
                 ConsoleLogger.Default.WriteLineError(e.Message);
-                return new[] { Summary.NothingToRun(e.Message, string.Empty, string.Empty) };
+                return new[] { Summary.NothingToRun(e.Message, string.Empty, string.Empty, new RuntimeInfoWrapper()) };
             }
         }
     }

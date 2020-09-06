@@ -1,5 +1,6 @@
 using System.Linq;
 using BenchmarkDotNet.Extensions;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
@@ -11,8 +12,8 @@ namespace BenchmarkDotNet.Columns
 
         public string Id => nameof(CategoriesColumn);
         public string ColumnName => "Categories";
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase) => string.Join(",", benchmarkCase.Descriptor.Categories);
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, IRuntimeInfoWrapper runtimeInfoWrapper) => string.Join(",", benchmarkCase.Descriptor.Categories);
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper) => GetValue(summary, benchmarkCase, runtimeInfoWrapper);
         public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => false;
         public bool IsAvailable(Summary summary) => summary.BenchmarksCases.Any(b => !b.Descriptor.Categories.IsEmpty());
         public bool AlwaysShow => false;

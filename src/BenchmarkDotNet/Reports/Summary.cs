@@ -7,6 +7,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Helpers;
 using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Validators;
 using JetBrains.Annotations;
@@ -43,7 +44,8 @@ namespace BenchmarkDotNet.Reports
             string logFilePath,
             TimeSpan totalTime,
             CultureInfo cultureInfo,
-            ImmutableArray<ValidationError> validationErrors)
+            ImmutableArray<ValidationError> validationErrors,
+            IRuntimeInfoWrapper runtimeInfoWrapper)
         {
             Title = title;
             ResultsDirectoryPath = resultsDirectoryPath;
@@ -60,7 +62,7 @@ namespace BenchmarkDotNet.Reports
             Reports = BenchmarksCases.Select(b => ReportMap[b]).ToImmutableArray(); // we use sorted collection to re-create reports list
             BaseliningStrategy = BaseliningStrategy.Create(BenchmarksCases);
             Style = GetConfiguredSummaryStyleOrNull(BenchmarksCases)?.WithCultureInfo(cultureInfo);
-            Table = GetTable(Style);
+            Table = GetTable(Style, runtimeInfoWrapper);
             AllRuntimes = BuildAllRuntimes(HostEnvironmentInfo, Reports);
         }
 
@@ -75,13 +77,13 @@ namespace BenchmarkDotNet.Reports
 
         public int GetNumberOfExecutedBenchmarks() => Reports.Count(report => report.ExecuteResults.Any(result => result.FoundExecutable));
 
-        internal static Summary NothingToRun(string title, string resultsDirectoryPath, string logFilePath)
-            => new Summary(title, ImmutableArray<BenchmarkReport>.Empty, HostEnvironmentInfo.GetCurrent(), resultsDirectoryPath, logFilePath, TimeSpan.Zero, DefaultCultureInfo.Instance, ImmutableArray<ValidationError>.Empty);
+        internal static Summary NothingToRun(string title, string resultsDirectoryPath, string logFilePath, IRuntimeInfoWrapper runtimeInfoWrapper)
+            => new Summary(title, ImmutableArray<BenchmarkReport>.Empty, HostEnvironmentInfo.GetCurrent(), resultsDirectoryPath, logFilePath, TimeSpan.Zero, DefaultCultureInfo.Instance, ImmutableArray<ValidationError>.Empty, runtimeInfoWrapper);
 
-        internal static Summary ValidationFailed(string title, string resultsDirectoryPath, string logFilePath, ImmutableArray<ValidationError> validationErrors)
-            => new Summary(title, ImmutableArray<BenchmarkReport>.Empty, HostEnvironmentInfo.GetCurrent(), resultsDirectoryPath, logFilePath, TimeSpan.Zero, DefaultCultureInfo.Instance, validationErrors);
+        internal static Summary ValidationFailed(string title, string resultsDirectoryPath, string logFilePath, ImmutableArray<ValidationError> validationErrors, IRuntimeInfoWrapper runtimeInfoWrapper)
+            => new Summary(title, ImmutableArray<BenchmarkReport>.Empty, HostEnvironmentInfo.GetCurrent(), resultsDirectoryPath, logFilePath, TimeSpan.Zero, DefaultCultureInfo.Instance, validationErrors, runtimeInfoWrapper);
 
-        internal static Summary Join(List<Summary> summaries, ClockSpan clockSpan)
+        internal static Summary Join(List<Summary> summaries, ClockSpan clockSpan, IRuntimeInfoWrapper runtimeInfoWrapper)
             => new Summary(
                 $"BenchmarkRun-joined-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}",
                 summaries.SelectMany(summary => summary.Reports).ToImmutableArray(),
@@ -90,7 +92,8 @@ namespace BenchmarkDotNet.Reports
                 summaries.First().LogFilePath,
                 clockSpan.GetTimeSpan(),
                 summaries.First().GetCultureInfo(),
-                summaries.SelectMany(summary => summary.ValidationErrors).ToImmutableArray());
+                summaries.SelectMany(summary => summary.ValidationErrors).ToImmutableArray(),
+                runtimeInfoWrapper);
 
         internal static string BuildAllRuntimes(HostEnvironmentInfo hostEnvironmentInfo, IEnumerable<BenchmarkReport> reports)
         {
@@ -120,7 +123,7 @@ namespace BenchmarkDotNet.Reports
             return string.Join(Environment.NewLine, lines);
         }
 
-        internal SummaryTable GetTable(SummaryStyle style) => new SummaryTable(this, style);
+        internal SummaryTable GetTable(SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper) => new SummaryTable(this, runtimeInfoWrapper, style);
 
         [CanBeNull]
         public string GetLogicalGroupKey(BenchmarkCase benchmarkCase)

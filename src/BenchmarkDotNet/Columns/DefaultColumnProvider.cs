@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Extensions;
 using BenchmarkDotNet.Mathematics;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using JetBrains.Annotations;
 using Perfolizer.Mathematics.Common;
@@ -21,7 +22,7 @@ namespace BenchmarkDotNet.Columns
 
         private class DescriptorColumnProvider : IColumnProvider
         {
-            public IEnumerable<IColumn> GetColumns(Summary summary)
+            public IEnumerable<IColumn> GetColumns(Summary summary, IRuntimeInfoWrapper runtimeInfoWrapper)
             {
                 if (summary.BenchmarksCases.Select(b => b.Descriptor.Type.Namespace).Distinct().Count() > 1)
                     yield return TargetMethodColumn.Namespace;
@@ -33,12 +34,12 @@ namespace BenchmarkDotNet.Columns
 
         private class JobColumnProvider : IColumnProvider
         {
-            public IEnumerable<IColumn> GetColumns(Summary summary) => JobCharacteristicColumn.AllColumns;
+            public IEnumerable<IColumn> GetColumns(Summary summary, IRuntimeInfoWrapper runtimeInfoWrapper) => JobCharacteristicColumn.AllColumns;
         }
 
         private class StatisticsColumnProvider : IColumnProvider
         {
-            public IEnumerable<IColumn> GetColumns(Summary summary)
+            public IEnumerable<IColumn> GetColumns(Summary summary, IRuntimeInfoWrapper runtimeInfoWrapper)
             {
                 yield return StatisticColumn.Mean;
                 yield return StatisticColumn.Error;
@@ -56,7 +57,7 @@ namespace BenchmarkDotNet.Columns
                 {
                     yield return BaselineRatioColumn.RatioMean;
                     var stdDevColumn = BaselineRatioColumn.RatioStdDev;
-                    var stdDevColumnValues = summary.BenchmarksCases.Select(b => stdDevColumn.GetValue(summary, b));
+                    var stdDevColumnValues = summary.BenchmarksCases.Select(b => stdDevColumn.GetValue(summary, b, runtimeInfoWrapper));
 
                     // Hide RatioSD column if values is small
                     // TODO: rewrite and check raw values
@@ -74,7 +75,7 @@ namespace BenchmarkDotNet.Columns
 
         private class ParamsColumnProvider : IColumnProvider
         {
-            public IEnumerable<IColumn> GetColumns(Summary summary) => summary
+            public IEnumerable<IColumn> GetColumns(Summary summary, IRuntimeInfoWrapper runtimeInfoWrapper) => summary
                 .BenchmarksCases
                 .SelectMany(b => b.Parameters.Items.Select(item => item.Name))
                 .Distinct()
@@ -83,7 +84,7 @@ namespace BenchmarkDotNet.Columns
 
         private class MetricsColumnProvider : IColumnProvider
         {
-            public IEnumerable<IColumn> GetColumns(Summary summary) => summary
+            public IEnumerable<IColumn> GetColumns(Summary summary, IRuntimeInfoWrapper runtimeInfoWrapper) => summary
                 .Reports
                 .SelectMany(report => report.Metrics.Values.Select(metric => metric.Descriptor))
                 .Distinct(MetricDescriptorEqualityComparer.Instance)

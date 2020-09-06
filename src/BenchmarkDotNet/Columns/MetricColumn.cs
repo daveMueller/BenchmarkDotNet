@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using Perfolizer.Horology;
@@ -24,9 +25,9 @@ namespace BenchmarkDotNet.Columns
 
         public bool IsAvailable(Summary summary) => summary.Reports.Any(report => report.Metrics.ContainsKey(descriptor.Id));
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase) => GetValue(summary, benchmarkCase, SummaryStyle.Default);
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, IRuntimeInfoWrapper runtimeInfoWrapper) => GetValue(summary, benchmarkCase, SummaryStyle.Default, runtimeInfoWrapper);
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper)
         {
             if (!summary.HasReport(benchmarkCase) || !summary[benchmarkCase].Metrics.TryGetValue(descriptor.Id, out Metric metric) || (metric.Value == 0.0 && !style.PrintZeroValuesInContent))
                 return "-";

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Extensions;
+using BenchmarkDotNet.Portability;
 using JetBrains.Annotations;
 using Perfolizer.Horology;
 
@@ -24,7 +25,7 @@ namespace BenchmarkDotNet.Reports
         public SummaryStyle EffectiveSummaryStyle { get; }
         public bool SeparateLogicalGroups { get; }
 
-        internal SummaryTable(Summary summary, SummaryStyle style = null)
+        internal SummaryTable(Summary summary, IRuntimeInfoWrapper runtimeInfoWrapper, SummaryStyle style = null)
         {
             Summary = summary;
 
@@ -53,11 +54,11 @@ namespace BenchmarkDotNet.Reports
                 style = style.WithSizeUnit(SizeUnit.GetBestSizeUnit(summary.Reports.Select(r => r.GcStats.BytesAllocatedPerOperation).ToArray()));
             }
 
-            var columns = summary.GetColumns();
+            var columns = summary.GetColumns(runtimeInfoWrapper);
             ColumnCount = columns.Length;
             FullHeader = columns.Select(c => c.GetColumnTitle(style)).ToArray();
 
-            FullContent = summary.Reports.Select(r => columns.Select(c => c.GetValue(summary, r.BenchmarkCase, style)).ToArray()).ToArray();
+            FullContent = summary.Reports.Select(r => columns.Select(c => c.GetValue(summary, r.BenchmarkCase, style, runtimeInfoWrapper)).ToArray()).ToArray();
             IsDefault = columns.Select(c => summary.Reports.All(r => c.IsDefault(summary, r.BenchmarkCase))).ToArray();
 
             var highlightGroupKeys = summary.BenchmarksCases.Select(b => b.Config.Orderer.GetHighlightGroupKey(b)).ToArray();

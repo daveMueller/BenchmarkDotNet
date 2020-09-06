@@ -8,6 +8,7 @@ using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Tests.Mocks;
 using BenchmarkDotNet.Tests.XUnit;
 using BenchmarkDotNet.Validators;
 using Xunit;
@@ -128,7 +129,8 @@ namespace BenchmarkDotNet.IntegrationTests
                 logFilePath: string.Empty,
                 totalTime: System.TimeSpan.Zero,
                 cultureInfo: TestCultureInfo.Instance,
-                validationErrors: ImmutableArray<ValidationError>.Empty
+                validationErrors: ImmutableArray<ValidationError>.Empty,
+                runtimeInfoWrapper: MockFactory.CreateRuntimeInfoWrapper()
             );
         }
 

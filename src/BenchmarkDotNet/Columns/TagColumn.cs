@@ -1,4 +1,5 @@
 ﻿using System;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
@@ -19,7 +20,7 @@ namespace BenchmarkDotNet.Columns
         }
 
         public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => false;
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase) => getTag(benchmarkCase.Descriptor.WorkloadMethod.Name);
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, IRuntimeInfoWrapper runtimeInfoWrapper) => getTag(benchmarkCase.Descriptor.WorkloadMethod.Name);
 
         public bool IsAvailable(Summary summary) => true;
         public bool AlwaysShow => true;
@@ -28,7 +29,7 @@ namespace BenchmarkDotNet.Columns
         public bool IsNumeric => false;
         public UnitType UnitType => UnitType.Dimensionless;
         public string Legend => $"Custom '{ColumnName}' tag column";
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper) => GetValue(summary, benchmarkCase, runtimeInfoWrapper);
         public override string ToString() => ColumnName;
     }
 }

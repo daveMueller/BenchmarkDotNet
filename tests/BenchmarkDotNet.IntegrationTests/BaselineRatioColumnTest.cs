@@ -8,6 +8,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Exporters;
+using BenchmarkDotNet.Tests.Mocks;
 using Xunit.Abstractions;
 
 namespace BenchmarkDotNet.IntegrationTests
@@ -25,7 +26,7 @@ namespace BenchmarkDotNet.IntegrationTests
 
             var table = summary.Table;
             var headerRow = table.FullHeader;
-            var column = summary.GetColumns()
+            var column = summary.GetColumns(MockFactory.CreateRuntimeInfoWrapper())
                 .OfType<BaselineRatioColumn>()
                 .FirstOrDefault(c => c.Metric == BaselineRatioColumn.RatioMetric.Mean);
             Assert.NotNull(column);

@@ -27,7 +27,7 @@ namespace BenchmarkDotNet.Tests.Reports
         public void DefaultStatisticsColumnsTest(bool hugeSd, string expectedColumnNames)
         {
             var summary = CreateSummary(hugeSd, Array.Empty<Metric>());
-            var columns = DefaultColumnProviders.Statistics.GetColumns(summary).ToList();
+            var columns = DefaultColumnProviders.Statistics.GetColumns(summary, MockFactory.CreateRuntimeInfoWrapper()).ToList();
             string columnNames = string.Join(", ", columns.Select(c => c.ColumnName));
             output.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             output.WriteLine("DefaultStatisticsColumns: " + columnNames);
@@ -40,7 +40,7 @@ namespace BenchmarkDotNet.Tests.Reports
             var metrics = new[] { new Metric(new FakeMetricDescriptor("metric1", "some legend"), 0.1), new Metric(new FakeMetricDescriptor("metric2", "another legend"), 0.1) };
             var summary = CreateSummary(false, metrics);
 
-            var columns = DefaultColumnProviders.Metrics.GetColumns(summary).ToArray();
+            var columns = DefaultColumnProviders.Metrics.GetColumns(summary, MockFactory.CreateRuntimeInfoWrapper()).ToArray();
 
             Assert.Equal("metric1", columns[0].Id);
             Assert.Equal("metric2", columns[1].Id);

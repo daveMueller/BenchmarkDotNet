@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using BenchmarkDotNet.Mathematics;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using JetBrains.Annotations;
@@ -20,7 +21,7 @@ namespace BenchmarkDotNet.Columns
         public string Id => nameof(RankColumn) + "." + numeralSystem;
         public string ColumnName => "Rank";
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, IRuntimeInfoWrapper runtimeInfoWrapper)
         {
             var logicalGroup = summary
                 .GetLogicalGroupForBenchmark(benchmarkCase)
@@ -41,7 +42,7 @@ namespace BenchmarkDotNet.Columns
         public ColumnCategory Category => ColumnCategory.Custom;
         public bool IsNumeric => true;
         public UnitType UnitType => UnitType.Dimensionless;
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style, IRuntimeInfoWrapper runtimeInfoWrapper) => GetValue(summary, benchmarkCase, runtimeInfoWrapper);
         public int PriorityInCategory => (int) numeralSystem;
         public override string ToString() => ColumnName;
         public string Legend => $"Relative position of current benchmark mean among all benchmarks ({numeralSystem} style)";
