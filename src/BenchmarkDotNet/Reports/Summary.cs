@@ -76,8 +76,6 @@ namespace BenchmarkDotNet.Reports
 
         public int GetNumberOfExecutedBenchmarks() => Reports.Count(report => report.ExecuteResults.Any(result => result.FoundExecutable));
 
-        public IRuntimeInformationWrapper RuntimeInformationWrapper => new RuntimeInformationWrapper();
-
         internal static Summary NothingToRun(string title, string resultsDirectoryPath, string logFilePath)
             => new Summary(title, ImmutableArray<BenchmarkReport>.Empty, HostEnvironmentInfo.GetCurrent(), resultsDirectoryPath, logFilePath, TimeSpan.Zero, DefaultCultureInfo.Instance, ImmutableArray<ValidationError>.Empty);
 

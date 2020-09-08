@@ -5,6 +5,8 @@ using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Environments;
+using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Tests.Builders;
@@ -31,9 +33,7 @@ namespace BenchmarkDotNet.Tests.Mocks
                 ImmutableArray<ValidationError>.Empty);
         }
 
-        public static Summary CreateSummary(IConfig config)
-        {
-            var summary = new Summary(
+        public static Summary CreateSummary(IConfig config) => new Summary(
                 "MockSummary",
                 CreateReports(config),
                 new HostEnvironmentInfoBuilder().Build(),
@@ -42,12 +42,6 @@ namespace BenchmarkDotNet.Tests.Mocks
                 TimeSpan.FromMinutes(1),
                 config.CultureInfo,
                 ImmutableArray<ValidationError>.Empty);
-            var table = summary.Table;
-            var columns = table.Columns;
-            var runTime = columns.Where(x => x.Header == "Runtime").ToList();
-            runTime[0].Content[0] = "Fuck";
-            return summary;
-        }
 
         public static Summary CreateSummary(IConfig config, bool hugeSd, Metric[] metrics)
             => CreateSummary<MockBenchmarkClass>(config, hugeSd, metrics);
@@ -61,6 +55,8 @@ namespace BenchmarkDotNet.Tests.Mocks
                 TimeSpan.FromMinutes(1),
                 TestCultureInfo.Instance,
                 ImmutableArray<ValidationError>.Empty);
+
+        public static IRuntimeInformationWrapper CreateRuntimeInformationWrapper() => new MockRuntimeInformationWrapper();
 
         private static ImmutableArray<BenchmarkReport> CreateReports(IConfig config)
             => CreateBenchmarks<MockBenchmarkClass>(config).Select(CreateSimpleReport).ToImmutableArray();
@@ -97,6 +93,17 @@ namespace BenchmarkDotNet.Tests.Mocks
                 new Measurement(1, IterationMode.Workload, IterationStage.Result, 6, 1, 1)
             };
             return new BenchmarkReport(true, benchmarkCase, buildResult, buildResult, new List<ExecuteResult> { executeResult }, measurements, default, metrics);
+        }
+
+        class MockRuntimeInformationWrapper : IRuntimeInformationWrapper
+        {
+            public Runtime GetCurrentRuntime() => ClrRuntime.Net47;
+
+            public Platform GetCurrentPlatform() => Platform.AnyCpu;
+
+            public Jit GetCurrentJit() => Jit.Default;
+
+            public IntPtr GetCurrentAffinity() => IntPtr.Zero;
         }
 
         [LongRunJob]

@@ -11,8 +11,7 @@ namespace BenchmarkDotNet.Environments
     {
         public const int DefaultUnrollFactorForThroughput = 16;
 
-        public static IResolver Instance(IRuntimeInformationWrapper runtimeInformationWrapper) =>
-            new CompositeResolver(new EnvironmentResolver(runtimeInformationWrapper), GcResolver.Instance);
+        public static IResolver Instance = new CompositeResolver(new EnvironmentResolver(RuntimeInformationWrapperProvider.RuntimeInformationWrapper), GcResolver.Instance);
 
         private EnvironmentResolver(IRuntimeInformationWrapper runtimeInformationWrapper)
         {
